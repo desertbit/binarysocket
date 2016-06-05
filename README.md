@@ -91,7 +91,6 @@ import "github.com/desertbit/binarysocket"
 
 BinarySocket takes care about the byte order (endianness).
 The default byte encoding is in network order (**big endian**).
-
 BinarySocket includes a simple javascript byte handling library.
 For more information check the **[ByteBuffer](https://github.com/desertbit/byte-buffer)** project.
 
