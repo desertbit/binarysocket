@@ -1,0 +1,8 @@
+*~
+.DS_Store
+._.DS_Store
+bower_components
+node_modules
+client/node_modules
+client/bower_components
+sample/sample

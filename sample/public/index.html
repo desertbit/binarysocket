@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf8" />
+	<title>BinarySocket</title>
+	<script src="/dist/binarysocket.js"></script>
+</head>
+<body>
+	<h1>BinarySocket Sample</h1>
+
+	<script>
+		var socket = BinarySocket.open("/binsocket");
+
+		socket.onOpen = function() {
+			console.log("opened");
+
+			socket.write(BinarySocket.stringToBytes("Hello World!\n"));
+			socket.write(BinarySocket.stringToBytes("What a wonderful day!\n"));
+		};
+
+		socket.onClose = function() {
+			console.log("closed");
+		};
+
+		socket.onError = function(msg) {
+			console.log("error:", msg);
+		};
+
+		socket.onRead = function(data) {
+			console.log("read:", BinarySocket.bytesToString(data));
+		};
+	</script>
+</body>
+</html>
