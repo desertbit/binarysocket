@@ -81,7 +81,6 @@ type ajaxConn struct {
 	pushRequestActiveMutex sync.Mutex
 	pushToken              string
 
-	isClosed   bool
 	closedChan chan struct{}
 	closeMutex sync.Mutex
 
@@ -152,11 +151,13 @@ func (c *ajaxConn) Close() error {
 	c.closeMutex.Lock()
 	defer c.closeMutex.Unlock()
 
-	if c.isClosed {
+	// Check if closed.
+	select {
+	case <-c.closedChan:
 		return nil
+	default:
 	}
 
-	c.isClosed = true
 	close(c.closedChan)
 
 	c.io.Close()

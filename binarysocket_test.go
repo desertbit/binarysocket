@@ -59,7 +59,9 @@ func TestMain(m *testing.M) {
 
 func TestAcceptClose(t *testing.T) {
 	server := NewServer()
+	require.False(t, server.IsClosed())
 	server.Close()
+	require.True(t, server.IsClosed())
 
 	conn, err := server.Accept()
 	require.Nil(t, conn)

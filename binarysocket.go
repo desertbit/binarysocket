@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// package binarysocket is a real-time bidirectional binary socket library for the web.
+// Package binarysocket is a real-time bidirectional binary socket library for the web.
 // It offers a clean, robust and efficient way to connect webbrowsers with a go-backend in a simple way.
 // It automatically detects supported socket layers and chooses the most suitable one.
 // This library offers a net.Conn interface on the go-backend site and a similar net.Conn
@@ -66,7 +66,6 @@ type Server struct {
 	acceptConnChan chan net.Conn
 	checkOrigin    func(r *http.Request) bool
 
-	isClosed   bool
 	closedChan chan struct{}
 	closeMutex sync.Mutex
 
@@ -119,17 +118,27 @@ func (s *Server) Accept() (net.Conn, error) {
 	}
 }
 
+// IsClosed returns a boolean indicating if the server is closed.
+// This does not indicate the http server state.
+func (s *Server) IsClosed() bool {
+	select {
+	case <-s.closedChan:
+		return true
+	default:
+		return false
+	}
+}
+
 // Close the server by blocking all new incoming connections.
 // This does not close the http server.
 func (s *Server) Close() error {
 	s.closeMutex.Lock()
 	defer s.closeMutex.Unlock()
 
-	if s.isClosed {
+	if s.IsClosed() {
 		return nil
 	}
 
-	s.isClosed = true
 	close(s.closedChan)
 
 	// Close all connections in the accept channel.
@@ -150,7 +159,7 @@ func (s *Server) Close() error {
 // ServeHTTP implements the HTTP Handler interface of the http package.
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Block if closed.
-	if s.isClosed {
+	if s.IsClosed() {
 		http.Error(w, "Service Unavailable", http.StatusServiceUnavailable)
 		return
 	}
