@@ -43,7 +43,7 @@ import (
 //##################//
 
 const (
-	acceptConnBufferSize = 5
+	acceptConnBufferSize = 10
 )
 
 //##################//
