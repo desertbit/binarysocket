@@ -40,6 +40,7 @@ type wsConn struct {
 
 func (c *wsConn) Read(data []byte) (n int, err error) {
 	// Only retry once. Check the EOF comment down.
+Loop:
 	for i := 0; i <= 1; i++ {
 		// Obtain the next reader from the websocket if nil.
 		if c.reader == nil {
@@ -63,7 +64,7 @@ func (c *wsConn) Read(data []byte) (n int, err error) {
 				// number of bytes at the end of the input stream may return either
 				// err == EOF or err == nil. The next Read should return 0, EOF.
 				if n == 0 {
-					continue
+					continue Loop
 				}
 
 				return n, nil

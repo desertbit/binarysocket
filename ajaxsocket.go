@@ -431,7 +431,7 @@ func (s *Server) initAjaxRequest(remoteAddr, userAgent string, w http.ResponseWr
 	a.remoteIP = remoteIP
 
 	var uid string
-	func() {
+	err = func() error {
 		// Lock the mutex
 		s.ajaxSocketsMutex.Lock()
 		defer s.ajaxSocketsMutex.Unlock()
@@ -439,7 +439,10 @@ func (s *Server) initAjaxRequest(remoteAddr, userAgent string, w http.ResponseWr
 		// Obtain a new unique ID.
 		for {
 			// Generate it.
-			uid = randomString(ajaxUIDLength)
+			uid, err = randomString(ajaxUIDLength)
+			if err != nil {
+				return err
+			}
 
 			// Check if the new UID is already used.
 			// This is very unlikely, but we have to check this!
@@ -455,7 +458,11 @@ func (s *Server) initAjaxRequest(remoteAddr, userAgent string, w http.ResponseWr
 
 		// Add the new ajax socket to the map.
 		s.ajaxSockets[uid] = a
+		return nil
 	}()
+	if err != nil {
+		return err
+	}
 
 	// Start a goroutine which removes the socket again from the map
 	// as soon as the socket is closed.
@@ -477,8 +484,14 @@ func (s *Server) initAjaxRequest(remoteAddr, userAgent string, w http.ResponseWr
 	}()
 
 	// Create a new poll and push token.
-	a.pollToken = randomString(ajaxPollTokenLength)
-	a.pushToken = randomString(ajaxPushTokenLength)
+	a.pollToken, err = randomString(ajaxPollTokenLength)
+	if err != nil {
+		return err
+	}
+	a.pushToken, err = randomString(ajaxPushTokenLength)
+	if err != nil {
+		return err
+	}
 
 	// Tell the client the UID and the tokens.
 	_, err = io.WriteString(w, uid+ajaxDataDelimiter+a.pollToken+ajaxDataDelimiter+a.pushToken)
@@ -540,7 +553,10 @@ func (s *Server) pushAjaxRequest(headerStr, remoteAddr, userAgent string, rw htt
 	}
 
 	// Create a new push token.
-	a.pushToken = randomString(ajaxPushTokenLength)
+	a.pushToken, err = randomString(ajaxPushTokenLength)
+	if err != nil {
+		return err
+	}
 
 	// Send the new push token to the client.
 	_, err = io.WriteString(rw, a.pushToken)
@@ -623,7 +639,10 @@ func (s *Server) pollAjaxRequest(headerStr, remoteAddr, userAgent string, w http
 	a.timeout.Reset(ajaxSocketTimeout)
 
 	// Create a new poll token.
-	a.pollToken = randomString(ajaxPollTokenLength)
+	a.pollToken, err = randomString(ajaxPollTokenLength)
+	if err != nil {
+		return err
+	}
 
 	// Create a timeout timer for the poll.
 	timeout := time.NewTimer(ajaxPollTimeout)

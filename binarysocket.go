@@ -148,7 +148,7 @@ func (s *Server) Close() error {
 			case conn := <-s.acceptConnChan:
 				go conn.Close()
 			default:
-				break
+				return
 			}
 		}
 	}()
