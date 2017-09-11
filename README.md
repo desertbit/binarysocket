@@ -8,6 +8,7 @@ BinarySocket is a **real-time bidirectional binary socket library** for the web.
 You already have a Go application using a TCP connection? Just drop in the BinarySocket package, fire up a HTTP server and that's it. No further adaptions are required in the backend. Instead of writing one backend which is responsible to communicate with web-application and another backend which communicates with other go programs, BinarySocket eliminates this duplication.
 
 In a normal scenario a high-level communication protocol is stacked on top of BinarySocket.
+Example: **[PAKT Project](https://github.com/desertbit/binarysocket)**
 
 
 ## Socket layers
