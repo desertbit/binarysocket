@@ -25,7 +25,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 var (
